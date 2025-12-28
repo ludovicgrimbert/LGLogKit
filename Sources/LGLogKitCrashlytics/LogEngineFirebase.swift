@@ -12,6 +12,7 @@ import FirebaseCrashlytics
 
 /// Note: this engine only works when FirebaseCrashlytics exists
 public struct LogEngineFirebase: LGLogEngine {
+    public init() {}
     // swiftlint:disable:next function_parameter_count
     public func log(
         _ level: LGLogLevel,
