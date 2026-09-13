@@ -7,39 +7,26 @@
 
 import Foundation
 
-/// Note: this engine only works when compil flag DEBUG is set
+/// Prints every entry to the console, with a timestamp. Compiled out of Release builds:
+/// `print` is slow, unfiltered and ends up nowhere useful in production.
+///
+/// Privacy is ignored here on purpose: the console is the developer's own machine, and
+/// seeing the real values is the point of a debug log.
 public struct LogEnginePrint: LGLogEngine {
-    
+
     public init() {}
-    
-    public func log(
-        _ level: LGLogLevel,
-        _ emitters: [String],
-        _ message: String,
-        _ error: Error?,
-        _ userInfo: [String: SendableLoselessString]?,
-        _ file: StaticString,
-        _ function: StaticString,
-        _ line: UInt
-    ) {
-#if DEBUG
-        let joinedEmitters = emitters.joined(separator: "|")
-        let logLocation = "\(file):\(function):\(line)"
-        print(
-            Date.now.formatted(
-                .dateTime
-                    .year(.twoDigits)
-                    .month(.twoDigits)
-                    .day(.twoDigits)
-                    .hour(.twoDigits(amPM: .omitted))
-                    .minute(.twoDigits)
-                    .second(.twoDigits)
-                    .secondFraction(.fractional(3))
-            ) +
-            ":\(level.symbol):\(joinedEmitters):\(logLocation) \(message)",
-            error?.localizedDescription ?? "",
-            userInfo ?? ""
+
+    public func log(_ entry: LGLogEntry) {
+        #if DEBUG
+        print("\(Self.timestamp(entry.date)) \(entry.formattedLine)")
+        #endif
+    }
+
+    static func timestamp(_ date: Date) -> String {
+        date.formatted(
+            .dateTime
+                .hour(.twoDigits(amPM: .omitted)).minute(.twoDigits).second(.twoDigits)
+                .secondFraction(.fractional(3))
         )
-#endif
     }
 }

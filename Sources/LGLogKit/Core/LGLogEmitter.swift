@@ -1,41 +1,40 @@
 //
-//  ADSLogEmitter.swift
+//  LGLogEmitter.swift
 //  LGLogKit
 //
 //  Created by Ludovic Grimbert on 28/12/2025.
 //
 
-public typealias LGLogEmitterKey = KeyPath<LGLogEmitter, String>
+/// The part of the app an entry comes from. Each emitter can have its own log level
+/// (see ``LGLogger/setLevel(_:for:)``) and becomes the category in the system log.
+///
+/// Add your own as static members:
+///
+/// ```swift
+/// extension LGLogEmitter {
+///     static let payment: LGLogEmitter = "Payment"
+/// }
+/// LGLogger.shared.log(.info, "Receipt validated", emitter: .payment)
+/// ```
+public struct LGLogEmitter: Hashable, Sendable, RawRepresentable, ExpressibleByStringLiteral, CustomStringConvertible {
+    public let rawValue: String
 
-/// Add your own emitters by extanding this entity.
-///
-///     extension ADSLogEmitter {
-///         var myEmitter: String { "Name of my emitter in log" }
-///     }
-///
-/// You can now use it with the keypath syntax: `\.myEmitter`
-public struct LGLogEmitter: Sendable {
-    /// Everything related to the user interface
-    public let ui: String = "UI"
-    
-    /// The portion of an system which determines how
-    /// data is transformed or calculated, and how
-    /// it is routed to people or software.
-    /// Includes ViewModel, Coordinator, Worker...
-    public let business: String = "Business"
-    
-    /// SOUP: Software Of Unknown/Uncertain Pedigree/Provenance
-    ///
-    /// Basically all thrid party libraries
-    public let soup: String = "SOUP"
-    
-    /// All things related to the navigation.
-    /// Includes Router...
-    public let nav: String = "Navigation"
-    
-    /// Everything related to CoreData
-    public let data: String = "Data"
-    
-    /// Everything related to the network
-    public let network: String = "Network"
+    public init(rawValue: String) { self.rawValue = rawValue }
+    public init(_ name: String) { self.rawValue = name }
+    public init(stringLiteral value: String) { self.rawValue = value }
+
+    public var description: String { rawValue }
+
+    /// Everything related to the user interface.
+    public static let ui: LGLogEmitter = "UI"
+    /// How data is transformed and routed: view models, coordinators, use cases…
+    public static let business: LGLogEmitter = "Business"
+    /// Software Of Unknown Pedigree: third-party libraries.
+    public static let soup: LGLogEmitter = "SOUP"
+    /// Navigation, routers, deep links.
+    public static let nav: LGLogEmitter = "Navigation"
+    /// Persistence: SwiftData, Core Data, files, user defaults.
+    public static let data: LGLogEmitter = "Data"
+    /// Everything related to the network.
+    public static let network: LGLogEmitter = "Network"
 }
